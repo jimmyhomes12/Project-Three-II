@@ -12,11 +12,32 @@ Analyzed 100k synthetic sales with SQLite CTEs → RFM segments → Interactive 
 - **SQL (DBeaver/SQLite):** RFM modeling with window functions and CTEs.
 - **Tableau Public:** Heatmap + funnels — [view dashboard](https://public.tableau.com/app/profile/jimmyhomes12/viz/Project-Three-RFM/RFMHeatmap).
 
+## RFM Revenue Heatmap (SQL + Tableau)
+
+### Overview
+This dashboard segments 2025 e‑commerce customers into RFM buckets (Recency, Frequency, Monetary) using SQL, then visualizes revenue concentration across segments in Tableau.
+
+### Data modeling
+- Built RFM table in SQLite with a CTE that computes `recency_days`, `frequency`, and `total_revenue` per `customer_id`, then assigns R/F/M scores using `NTILE(5)`.
+- Joined the RFM table (`rfm_scores.csv`) to the full transactions table (`full_ecom.csv`) in Tableau on an explicit `customer_id` key to keep the model transparent.
+
+### Visualization design
+- Core view is a 5×5 RFM heatmap: **Rows = r_score**, **Columns = f_score**.
+- Color encodes `SUM(total_revenue)` via a dedicated calculated field `[Calculation_RevenueColor]` to highlight where revenue is concentrated.
+- `COUNTD(customer_id)` is retained for KPI cards and tooltips so each segment shows both "number of customers" and "segment revenue".
+
+### Why SUM(total_revenue) for color
+- Business users care first about "which segments drive the most revenue," not just "where are the most customers."
+- Using revenue on color and customer count in secondary elements (KPIs/tooltips) balances business impact with customer context.
+- This choice is documented in [TABLEAU_SETUP.md](tableau_viz/TABLEAU_SETUP.md) so others can reproduce or switch between revenue‑ and count‑based encoding.
+
+---
+
 ## Tableau Dashboard
 
 **Setup guide:** See [tableau_viz/TABLEAU_SETUP.md](tableau_viz/TABLEAU_SETUP.md) for CSV mapping, Relationship vs Blend, customers measure, and fixing data paths.
 
-Interactive RFM heatmap published to Tableau Public — axes: **R-Score** (rows) × **F-Score** (columns), colour intensity = customer count, with an **M-Score** parameter filter to drill into any monetary tier.
+Interactive RFM heatmap published to Tableau Public — axes: **R-Score** (rows) × **F-Score** (columns), colour intensity = **SUM(total_revenue)** (`[Calculation_RevenueColor]`), with an **M-Score** parameter filter to drill into any monetary tier.
 
 [![RFM Heatmap preview](https://public.tableau.com/static/images/Pr/Project-Three-RFM/RFMHeatmap/1_rss.png)](https://public.tableau.com/app/profile/jimmyhomes12/viz/Project-Three-RFM/RFMHeatmap)
 
