@@ -45,12 +45,21 @@ Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_20
 
 ---
 
-## 3) "Customers" measure
+## 3) "Customers" measure and calculated fields
+
+The workbook uses two calculated fields defined on the **rfm_dashboard** data source:
+
+| Calculated field | Formula | Used in |
+|---|---|---|
+| `[Calculation_RevenueColor]` | `SUM([total_revenue])` | Heatmap **Color** — highlights revenue concentration per R/F segment |
+| `[Calculation_CustomerCount]` | `COUNTD([customer_id])` | KPI Cards and heatmap **Tooltip** — shows distinct customers per segment |
+
+To **switch the heatmap from revenue to customer-count encoding**, replace `[Calculation_RevenueColor]` on the Color shelf with `[Calculation_CustomerCount]` (or drag **customer_id** → Color → Count (Distinct) directly).
 
 - **If using `rfm_scores.csv`:**  
-  - Heatmap color: drag **total_revenue** to Color → set the pill to **Sum**. This shows revenue concentration by RFM segment.  
-  - Alternatively, drag **customer_id** to Color → set to **Count (Distinct)** to show customer distribution.  
-  - KPI "Customers": **COUNTD(customer_id)**.
+  - Heatmap color (default): `[Calculation_RevenueColor]` → **SUM(total_revenue)**. This shows revenue concentration by RFM segment.  
+  - Alternatively, use `[Calculation_CustomerCount]` → **COUNTD(customer_id)** on Color for a customer-distribution heatmap.  
+  - KPI "Customers": `[Calculation_CustomerCount]`.
 
 - **If using `rfm_segments.csv`:**  
   - Heatmap color and customer KPI: **SUM(customers)**.
@@ -110,7 +119,10 @@ Use **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo. Paths bel
    - Drag **r_score** → **Rows**.
    - Drag **f_score** → **Columns**.
 3. Make both **Discrete** (blue pills): if they're green, right‑click each pill → **Convert to Discrete**.
-4. Drag **total_revenue** → **Marks → Color**. On the pill, set to **Measure → Sum** (SUM of total revenue). This colors each r/f cell by total revenue. Alternatively, drag **customer_id** → Color and set to **Measure → Count (Distinct)** for a customer-count heatmap.
+4. Set up the heatmap color encoding:
+   - **4a. Revenue color (default):** Drag **total_revenue** → **Marks → Color** → set pill to **Measure → Sum**. This creates `[Calculation_RevenueColor]` (SUM of total revenue) and colors each r/f cell by revenue concentration.
+   - **4b. Customer-count color (alternative):** Drag **customer_id** → **Marks → Color** → set pill to **Measure → Count (Distinct)**. This creates `[Calculation_CustomerCount]` (COUNTD of customer_id) for a customer-distribution heatmap.
+   - **4c. Rename (optional):** Right-click either pill in the Data pane → **Rename** → enter `[Calculation_RevenueColor]` or `[Calculation_CustomerCount]` to match the workbook naming. See [Section 3](#3-customers-measure-and-calculated-fields) for switching guidance.
 5. **Marks** dropdown → **Square**. Adjust **Size** so squares fill the grid.
 6. **Color** → **Edit Colors** → pick a sequential palette → **Use Full Color Range**.
 7. Optional: drag **m_score** to **Filters** → **Show Filter** (slider for monetary tier).
