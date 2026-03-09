@@ -26,7 +26,7 @@ Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_20
 
 - **Full dashboard (heatmap + KPIs + trend + Category/Device):**  
   Use **`data/rfm_scores.csv`** as the main RFM source.  
-  - Heatmap: Rows = `r_score`, Columns = `f_score`, Color = **COUNTD(customer_id)** (Count Distinct).  
+  - Heatmap: Rows = `r_score`, Columns = `f_score`, Color = **SUM(total_revenue)** (or **COUNTD(customer_id)**).  
   - Join to **`data/full_ecom.csv`** on `customer_id` (Relationship, see below).
 
 **Recommendation:** Use **rfm_scores.csv + full_ecom.csv** so the heatmap, KPIs, and trend line can all respond to Category/Device.
@@ -48,8 +48,9 @@ Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_20
 ## 3) "Customers" measure
 
 - **If using `rfm_scores.csv`:**  
-  - Heatmap color: drag **customer_id** to Color → set the pill to **Count (Distinct)**.  
-  - KPI "Customers": same **COUNTD(customer_id)**.
+  - Heatmap color: drag **total_revenue** to Color → set the pill to **Sum**. This shows revenue concentration by RFM segment.  
+  - Alternatively, drag **customer_id** to Color → set to **Count (Distinct)** to show customer distribution.  
+  - KPI "Customers": **COUNTD(customer_id)**.
 
 - **If using `rfm_segments.csv`:**  
   - Heatmap color and customer KPI: **SUM(customers)**.
@@ -109,7 +110,7 @@ Use **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo. Paths bel
    - Drag **r_score** → **Rows**.
    - Drag **f_score** → **Columns**.
 3. Make both **Discrete** (blue pills): if they're green, right‑click each pill → **Convert to Discrete**.
-4. Drag **customer_id** → **Marks → Color**. On the pill, set to **Measure → Count (Distinct)**.
+4. Drag **total_revenue** → **Marks → Color**. On the pill, set to **Measure → Sum** (SUM of total revenue). This colors each r/f cell by total revenue. Alternatively, drag **customer_id** → Color and set to **Measure → Count (Distinct)** for a customer-count heatmap.
 5. **Marks** dropdown → **Square**. Adjust **Size** so squares fill the grid.
 6. **Color** → **Edit Colors** → pick a sequential palette → **Use Full Color Range**.
 7. Optional: drag **m_score** to **Filters** → **Show Filter** (slider for monetary tier).
@@ -197,7 +198,7 @@ Saving as **.twbx** (File → Save As / Export Packaged Workbook) and saving int
 ## 9) Summary table (your files → tutorial)
 | Tutorial idea | Your file | Your field / measure |
 |---------------|-----------|------------------------|
-| RFM heatmap (with trend + filters) | `data/rfm_scores.csv` | R/F: `r_score`, `f_score` (discrete). Color: **COUNTD(customer_id)**. Optional size/detail: `m_score`. |
+| RFM heatmap (with trend + filters) | `data/rfm_scores.csv` | R/F: `r_score`, `f_score` (discrete). Color: **SUM(total_revenue)** (preferred) or **COUNTD(customer_id)**. Optional size/detail: `m_score`. |
 | Customers count | `rfm_scores` | **COUNTD(customer_id)** |
 | Revenue | `data/full_ecom.csv` (or rfm_scores) | **SUM(sales_amount)** or **SUM(total_revenue)** |
 | Order Date | `full_ecom.csv` | **order_date** (continuous, e.g. Month) |

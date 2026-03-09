@@ -175,6 +175,7 @@
       <column caption='Frequency' datatype='integer' name='[rfm_scores_OBJ].[frequency]' role='measure' type='quantitative' />
       <column caption='Total Revenue' datatype='real' default-format='$#,##0.00' name='[rfm_scores_OBJ].[total_revenue]' role='measure' type='quantitative' />
       <!-- full_ecom logical columns -->
+      <column caption='Customer ID (Transactions)' datatype='string' name='[full_ecom_OBJ].[customer_id]' role='dimension' type='nominal' />
       <column caption='Order ID' datatype='integer' name='[full_ecom_OBJ].[order_id]' role='dimension' type='nominal' />
       <column caption='Category' datatype='string' name='[full_ecom_OBJ].[category]' role='dimension' type='nominal' />
       <column caption='Sales Amount' datatype='real' default-format='$#,##0.00' name='[full_ecom_OBJ].[sales_amount]' role='measure' type='quantitative' />
@@ -185,6 +186,10 @@
       <!-- Calculated field: Count Distinct customers -->
       <column caption='Customer Count' datatype='integer' name='[Calculation_CustomerCount]' role='measure' type='quantitative'>
         <calculation class='tableau' formula='COUNTD([rfm_scores_OBJ].[customer_id])' />
+      </column>
+      <!-- Calculated field: SUM(total_revenue) for heatmap color -->
+      <column caption='Total Revenue (Heatmap)' datatype='real' default-format='$#,##0.00' name='[Calculation_RevenueColor]' role='measure' type='quantitative'>
+        <calculation class='tableau' formula='SUM([rfm_scores_OBJ].[total_revenue])' />
       </column>
       <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
       <semantic-values>
@@ -252,9 +257,9 @@
           <datasource-dependencies datasource='federated.rfm_dashboard'>
             <column datatype='integer' name='[rfm_scores_OBJ].[r_score]' role='dimension' type='ordinal' />
             <column datatype='integer' name='[rfm_scores_OBJ].[f_score]' role='dimension' type='ordinal' />
-            <column datatype='string' name='[rfm_scores_OBJ].[customer_id]' role='dimension' type='nominal' />
-            <column caption='Customer Count' datatype='integer' name='[Calculation_CustomerCount]' role='measure' type='quantitative'>
-              <calculation class='tableau' formula='COUNTD([rfm_scores_OBJ].[customer_id])' />
+            <column datatype='real' name='[rfm_scores_OBJ].[total_revenue]' role='measure' type='quantitative' />
+            <column caption='Total Revenue (Heatmap)' datatype='real' default-format='$#,##0.00' name='[Calculation_RevenueColor]' role='measure' type='quantitative'>
+              <calculation class='tableau' formula='SUM([rfm_scores_OBJ].[total_revenue])' />
             </column>
           </datasource-dependencies>
           <aggregation value='true' />
@@ -267,7 +272,7 @@
             </view>
             <mark class='Square' />
             <encodings>
-              <color column='[federated.rfm_dashboard].[Calculation_CustomerCount]' />
+              <color column='[federated.rfm_dashboard].[Calculation_RevenueColor]' />
             </encodings>
           </pane>
         </panes>
