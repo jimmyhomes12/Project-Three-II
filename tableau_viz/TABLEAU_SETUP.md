@@ -1,6 +1,6 @@
 # Tableau Public – E‑com RFM Dashboard Setup
 
-This guide maps **your repo’s CSV files** to the click-by-click tutorial and answers: **Relationship vs Blend**, **customers measure**, and **Category/Device filters**.
+This guide maps **your repo's CSV files** to the click-by-click tutorial and answers: **Relationship vs Blend**, **customers measure**, and **Category/Device filters**.
 
 ---
 
@@ -13,7 +13,7 @@ This guide maps **your repo’s CSV files** to the click-by-click tutorial and a
 | **Full e‑com transactions** | `data/full_ecom.csv` | `order_id, customer_id, category, sales_amount, order_date, device, promo_code, review_score` |
 | **Synthetic sales (alt)** | `data/synthetic_ecommerce_sales_2025.csv` | `order_id, customer_id, product_category, sales_amount, purchase_date, device_type, promo_code, review_score` |
 
-Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_2025.csv** and points to paths under `Project-Three-main`. To use this repo and get Category/Device + trend, switch to the setup below.
+Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_2025.csv** and points to paths under `Project-Three-main`. To use this repo and get Category/Device + trend, switch to the setup below using **rfm_scores.csv** + **full_ecom.csv** as described in Sections 1–6.
 
 ---
 
@@ -41,15 +41,15 @@ Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_20
   - Create a **Relationship** on **customer_id**.  
   - Set both `customer_id` fields to **String** (avoids type mismatch and leading-zero issues).
 
-- **Use Blend only** if you can’t add a Relationship (e.g. Tableau Public limitations). Then: primary = RFM source, secondary = full_ecom; link by `customer_id` and ensure the link icon is active when `customer_id` is in the view. Blending can be finicky for filtering.
+- **Use Blend only** if you can't add a Relationship (e.g. Tableau Public limitations). Then: primary = RFM source, secondary = full_ecom; link by `customer_id` and ensure the link icon is active when `customer_id` is in the view. Blending can be finicky for filtering across multiple sheets, so a Relationship is preferred whenever possible.
 
 ---
 
-## 3) “Customers” measure
+## 3) "Customers" measure
 
 - **If using `rfm_scores.csv`:**  
   - Heatmap color: drag **customer_id** to Color → set the pill to **Count (Distinct)**.  
-  - KPI “Customers”: same **COUNTD(customer_id)**.
+  - KPI "Customers": same **COUNTD(customer_id)**.
 
 - **If using `rfm_segments.csv`:**  
   - Heatmap color and customer KPI: **SUM(customers)**.
@@ -58,7 +58,7 @@ Your current workbook uses **rfm_segments.csv** + **synthetic_ecommerce_sales_20
 
 ## 4) Revenue and trend (full_ecom)
 
-- **Revenue:** Use **SUM(sales_amount)** from **full_ecom** (after relationship). Optionally you can use **SUM(total_revenue)** from **rfm_scores** for a KPI that doesn’t depend on the transaction table.
+- **Revenue:** Use **SUM(sales_amount)** from **full_ecom** (after relationship). Optionally you can use **SUM(total_revenue)** from **rfm_scores** for a KPI that doesn't depend on the transaction table.
 - **Trend line:**  
   - Columns: **order_date** (from full_ecom) → set to continuous (e.g. Month or Week).  
   - Rows: **SUM(sales_amount)**.  
@@ -88,7 +88,7 @@ Use **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo. Paths bel
 
 1. Left pane **Connect**: **Text file** → browse to **`data/rfm_scores.csv`** → **Open**.
 2. On the Data Source page, check the preview: columns `customer_id`, `r_score`, `f_score`, `m_score`, `total_revenue`.
-3. If **customer_id** is not String: click the column’s type icon → **String**.
+3. If **customer_id** is not String: click the column's type icon → **String**.
 4. Click **Sheet 1** at the bottom.
 
 ### Step 3 – Add full_ecom and create Relationship
@@ -108,7 +108,7 @@ Use **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo. Paths bel
 2. In the Data pane, from the **rfm_scores** (primary) source:
    - Drag **r_score** → **Rows**.
    - Drag **f_score** → **Columns**.
-3. Make both **Discrete** (blue pills): if they’re green, right‑click each pill → **Convert to Discrete**.
+3. Make both **Discrete** (blue pills): if they're green, right‑click each pill → **Convert to Discrete**.
 4. Drag **customer_id** → **Marks → Color**. On the pill, set to **Measure → Count (Distinct)**.
 5. **Marks** dropdown → **Square**. Adjust **Size** so squares fill the grid.
 6. **Color** → **Edit Colors** → pick a sequential palette → **Use Full Color Range**.
@@ -129,7 +129,7 @@ Use **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo. Paths bel
 2. Remove **r_score** from Rows and **f_score** from Columns (drag pills off).
 3. **Marks** → **Text**.
 4. Drag **customer_id** to **Text** → set to **Count (Distinct)**. Drag **sales_amount** (or **total_revenue** from rfm_scores) to **Text** → **SUM**.
-5. Format the text (e.g. “Customers: &lt;COUNTD(customer_id)&gt;” and “Revenue: &lt;SUM(...)&gt;”) Edit the text (double‑click the Text mark), add labels and the measures, and set font size to 18–24.
+5. Format the text: double‑click the **Text** mark to open the editor. Type labels such as `Customers:` followed by the `<COUNTD(customer_id)>` insert, and `Revenue:` followed by the `<SUM(sales_amount)>` insert. Set the font size to **18–24 pt** so the KPI numbers are large and easy to read on the dashboard.
 
 ### Step 7 – Create the dashboard and add filters
 
@@ -155,19 +155,18 @@ Use **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo. Paths bel
 
 ### Step 9 – Publish and export for GitHub
 
-1. **File → Save to Tableau Public** → name (e.g. “Project-Three RFM”). After publish, use **Share → Embed** for your README if needed.
+1. **File → Save to Tableau Public** → name (e.g. "Project-Three RFM"). After publish, use **Share → Embed** for your README if needed.
 2. **File → Export Packaged Workbook** (or **Save As** and choose .twbx) → save as **`tableau_viz/Ecom_RFM_Dashboard.twbx`** so the packaged workbook in the repo uses the correct data.
 
 ### Tableau Public notes
 
 - **Relationships:** Tableau Public supports relationships in the same way as Desktop for text/CSV; use **Data → New Data Source** and the relationship on **customer_id**.
-- If the relationship UI differs (e.g. “Edit Relationship” instead of a canvas), link **customer_id** to **customer_id** and set both to String.
+- If the relationship UI differs (e.g. "Edit Relationship" instead of a canvas), link **customer_id** to **customer_id** and set both to String.
 - **Data limits:** Tableau Public has size limits; your CSVs (e.g. 800 rows for rfm_scores, 5k for full_ecom) are well within range.
 
 ---
 
 ## 7) Data path fix (existing .twb)
-
 The existing **Ecom_RFM_Dashboard.twb** references:
 
 - `.../Project-Three-main/output/rfm_segments.csv`
@@ -181,16 +180,14 @@ This repo is **Project-Three** (no `-main`). So either:
    - or `.../Project-Three/data/full_ecom.csv` (if you switch to full_ecom),  
    using the actual path to **this** repo on your machine, or  
 
-2. **Start from the tutorial** with **Save As → Ecom_RFM_Dashboard.twbx** in **`tableau_viz/`**, connect to **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo, then build the heatmap + KPIs + trend + filters as in the tutorial.
-
+2. **Start from the tutorial** with **Save As → Ecom_RFM_Dashboard.twbx** in **`tableau_viz/`**, connect to **data/rfm_scores.csv** and **data/full_ecom.csv** from this repo, then build the heatmap + KPIs + trend + filters as described in Section 6 above.
 Saving as **.twbx** (File → Save As / Export Packaged Workbook) and saving into **`tableau_viz/`** keeps the CSVs with the workbook for GitHub.
 
 ---
 
-## 7) Quick “no data” checklist
-
+## 8) Quick "no data" checklist
 - **Scores discrete:** Right‑click **r_score** / **f_score** → **Convert to Discrete** (blue pills).  
-- **Filters:** Temporarily set to “All” or remove to test.  
+- **Filters:** Temporarily set to "All" or remove to test.  
 - **customer_id:** Both sides **String**; watch for leading zeros in CSV.  
 - **Dashboard Actions:** Heatmap filter action → target sheets = KPI Cards + Sales Trend.  
 - **Blend:** If using blend, ensure **customer_id** is in the view and the link icon is active.
@@ -198,7 +195,6 @@ Saving as **.twbx** (File → Save As / Export Packaged Workbook) and saving int
 ---
 
 ## 9) Summary table (your files → tutorial)
-
 | Tutorial idea | Your file | Your field / measure |
 |---------------|-----------|------------------------|
 | RFM heatmap (with trend + filters) | `data/rfm_scores.csv` | R/F: `r_score`, `f_score` (discrete). Color: **COUNTD(customer_id)**. Optional size/detail: `m_score`. |
